@@ -7,9 +7,7 @@
     "codegen": "graph codegen --output-dir src/types/",
     "build": "graph build --ipfs https://api.staging.thegraph.com/ipfs/ ",
     "create-local": "graph create liu-zhipeng/scream-v1 --node http://127.0.0.1:8020",
-    "deploy-local": "graph deploy liu-zhipeng/scream-v1 --debug --ipfs http://localhost:5001 --node http://127.0.0.1:8020/",
-    "deploy": "graph deploy liu-zhipeng/scream-v1 --debug --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-staging": "graph deploy --debug --ipfs https://api.staging.thegraph.com/ipfs/ --node https://api.staging.thegraph.com/deploy/ liu-zhipeng/scream-v1",
+    "deploy": "graph deploy --product hosted-service morphex-labs/dokkodo-v1 subgraph.yaml",
     "prettier": "./node_modules/.bin/prettier —-write '**/*.ts'"
   },
   "devDependencies": {
