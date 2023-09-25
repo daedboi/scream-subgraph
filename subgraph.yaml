@@ -1,6 +1,6 @@
 specVersion: 0.0.2
-description: S.C.R.E.A.M Finance.
-repository: https://github.com/Scream-Finance/scream-v1-subgraph
+description: Dokkodo.
+repository: https://github.com/Scream-Finance/scream-subgraph
 schema:
   file: ./schema.graphql
 dataSources:
@@ -8,9 +8,9 @@ dataSources:
     name: Comptroller
     network: fantom
     source:
-      address: "0xe4Ba95c54fB96AE5807E88ed466c6A80326273A2"
+      address: "0x29c2C71619d1f2f1dB558beACB3D79a1A5849180"
       abi: Comptroller
-      startBlock: 10600000
+      startBlock: 68330054
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
