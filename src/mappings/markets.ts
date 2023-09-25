@@ -44,6 +44,11 @@ function getTokenPrice(
   underlyingDecimals: i32,
 ): BigDecimal {
   let comptroller = Comptroller.load('1')
+
+  if (!comptroller) {
+    throw new Error('Comptroller is null for 1')
+  }
+
   let oracleAddress = comptroller.priceOracle as Address
   let underlyingPrice: BigDecimal
   if (oracleAddress.toHexString() == '0x') {
@@ -64,6 +69,11 @@ function getTokenPrice(
 // Returns the price of USDC in eth. i.e. 0.005 would mean ETH is $200
 function getUSDCpriceETH(): BigDecimal {
   let comptroller = Comptroller.load('1')
+
+  if (!comptroller) {
+    throw new Error('Comptroller is null for 1')
+  }
+
   let oracleAddress = comptroller.priceOracle as Address
   let usdPrice: BigDecimal
   if (oracleAddress.toHexString() == '0x') {
@@ -166,19 +176,19 @@ export function updateMarket(event: AccrueInterest): Market {
     let contractAddress = Address.fromString(market.id)
     let contract = CToken.bind(contractAddress)
 
-    let usdPriceInEth = zeroBD;
-    let cUSDCMarket = Market.load(cUSDCAddress);
-    if(cUSDCMarket) {
+    let usdPriceInEth = zeroBD
+    let cUSDCMarket = Market.load(cUSDCAddress)
+    if (cUSDCMarket) {
       usdPriceInEth = cUSDCMarket.underlyingPrice
     }
- 
+
     if (
       usdPriceInEth.equals(zeroBD) ||
       blockNumber - market.accrualBlockNumber > blocksPerTenMin
     ) {
       usdPriceInEth = getUSDCpriceETH()
     }
-  
+
     // if cETH, we only update USD price
     if (market.id == cETHAddress && usdPriceInEth.gt(zeroBD)) {
       market.underlyingPriceUSD = market.underlyingPrice
@@ -209,7 +219,7 @@ export function updateMarket(event: AccrueInterest): Market {
       .totalSupply()
       .toBigDecimal()
       .div(cTokenDecimalsBD)
- 
+
     /* Exchange rate explanation
        In Practice
         - If you call the cDAI contract on etherscan it comes back (2.0 * 10^26)
@@ -245,17 +255,17 @@ export function updateMarket(event: AccrueInterest): Market {
         .totalReserves()
         .toBigDecimal()
         .div(exponentToBigDecimal(market.underlyingDecimals))
-        .truncate(market.underlyingDecimals)   
+        .truncate(market.underlyingDecimals)
     }
 
     market.totalBorrows = event.params.totalBorrows
       .toBigDecimal()
       .div(exponentToBigDecimal(market.underlyingDecimals))
-      .truncate(market.underlyingDecimals) 
+      .truncate(market.underlyingDecimals)
     market.cash = event.params.cashPrior
       .toBigDecimal()
       .div(exponentToBigDecimal(market.underlyingDecimals))
-      .truncate(market.underlyingDecimals)    
+      .truncate(market.underlyingDecimals)
     // Only update if it has not been updated in 10 minutes to speed up syncing process
     if (blockNumber - market.accrualBlockNumber > blocksPerTenMin) {
       // Must convert to BigDecimal, and remove 10^18 that is used for Exp in Compound Solidity
@@ -264,7 +274,7 @@ export function updateMarket(event: AccrueInterest): Market {
         .toBigDecimal()
         .times(BigDecimal.fromString(blocksPerYear))
         .div(mantissaFactorBD)
-        .truncate(mantissaFactor) 
+        .truncate(mantissaFactor)
       // This fails on only the first call to cZRX. It is unclear why, but otherwise it works.
       // So we handle it like this.
       let supplyRatePerBlock = contract.try_supplyRatePerBlock()
@@ -289,7 +299,7 @@ export function updateMarket(event: AccrueInterest): Market {
       .toBigDecimal()
       .div(exponentToBigDecimal(market.underlyingDecimals))
       .truncate(market.underlyingDecimals)
-      
+
     market.save()
   }
   return market as Market
