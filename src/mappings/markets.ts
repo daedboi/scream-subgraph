@@ -1,7 +1,14 @@
 /* eslint-disable prefer-const */ // to satisfy AS compiler
 
 // For each division by 10, add one to exponent to truncate one significant figure
-import { Address, BigDecimal, BigInt, log, dataSource } from '@graphprotocol/graph-ts'
+import {
+  Address,
+  Bytes,
+  BigDecimal,
+  BigInt,
+  log,
+  dataSource,
+} from '@graphprotocol/graph-ts'
 import { Market, Comptroller } from '../types/schema'
 import { PriceOracle } from '../types/templates/CToken/PriceOracle'
 import { ERC20 } from '../types/templates/CToken/ERC20'
@@ -36,6 +43,24 @@ let blocksPerTenMin =
   network == 'fantom'
     ? 600 // fantom
     : 200 // bsc
+
+// function bytesToAddress(bytesValue: Bytes): Address {
+//   if (bytesValue.length == 20) {
+//     return bytesValue as Address;
+//   } else {
+//     log.error("Invalid Ethereum address length. Expected 20 bytes.", []);
+//     return Address.zero();
+//   }
+// }
+function bytesToAddress(bytesValue: Bytes): Address {
+  let addressStr: string = bytesValue.toHexString()
+
+  if (addressStr.length != 42 || addressStr.substring(0, 2) != '0x') {
+    log.error('Invalid Ethereum address length. Expected 20 bytes.', [])
+  }
+
+  return Address.fromString(addressStr)
+}
 
 // Used for all cERC20 contracts
 function getTokenPrice(
@@ -122,7 +147,7 @@ export function createMarket(marketAddress: string): Market {
   } else {
     market = new Market(marketAddress)
     market.underlyingAddress = contract.underlying()
-    let underlyingContract = ERC20.bind(market.underlyingAddress as Address)
+    let underlyingContract = ERC20.bind(bytesToAddress(market.underlyingAddress))
     market.underlyingDecimals = underlyingContract.decimals()
     market.underlyingName = underlyingContract.name()
     market.underlyingSymbol = underlyingContract.symbol()
