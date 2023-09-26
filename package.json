@@ -35,6 +35,7 @@
     ]
   },
   "dependencies": {
+    "abortcontroller-polyfill": "^1.7.5",
     "concat-stream": "maxogden/concat-stream"
   }
 }

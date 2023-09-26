@@ -8,9 +8,9 @@ dataSources:
     name: Comptroller
     network: fantom
     source:
-      address: "0xf2dF7C5F51Bc89fBbd52f295D1C9d27469Ff4e70"
+      address: "0x29c2C71619d1f2f1dB558beACB3D79a1A5849180"
       abi: Comptroller
-      startBlock: 68329786
+      startBlock: 68330054
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.6
