@@ -29,6 +29,7 @@ import {
   cTokenDecimalsBD,
   cTokenDecimals,
 } from './helpers'
+import { log } from '@graphprotocol/graph-ts'
 
 /* Account supplies assets into market and receives cTokens in exchange
  *
@@ -47,7 +48,8 @@ export function handleMint(event: Mint): void {
   let market = Market.load(event.address.toHexString())
 
   if (!market) {
-    throw new Error('Market is null for address: ' + event.address.toHexString())
+    log.error('Market is null for address: {}', [event.address.toHexString()])
+    return
   }
 
   let mintID = event.transaction.hash
@@ -91,7 +93,8 @@ export function handleRedeem(event: Redeem): void {
   let market = Market.load(event.address.toHexString())
 
   if (!market) {
-    throw new Error('Market is null for address: ' + event.address.toHexString())
+    log.error('Market is null for address: {}', [event.address.toHexString()])
+    return
   }
 
   let redeemID = event.transaction.hash
@@ -132,7 +135,8 @@ export function handleBorrow(event: Borrow): void {
   let market = Market.load(event.address.toHexString())
 
   if (!market) {
-    throw new Error('Market is null for address: ' + event.address.toHexString())
+    log.error('Market is null for address: {}', [event.address.toHexString()])
+    return
   }
 
   let accountID = event.params.borrower.toHex()
@@ -213,7 +217,8 @@ export function handleRepayBorrow(event: RepayBorrow): void {
   let market = Market.load(event.address.toHexString())
 
   if (!market) {
-    throw new Error('Market is null for address: ' + event.address.toHexString())
+    log.error('Market is null for address: {}', [event.address.toHexString()])
+    return
   }
 
   let accountID = event.params.borrower.toHex()
@@ -315,15 +320,17 @@ export function handleLiquidateBorrow(event: LiquidateBorrow): void {
   let marketRepayToken = Market.load(event.address.toHexString())
 
   if (!marketRepayToken) {
-    throw new Error('Market is null for address: ' + event.address.toHexString())
+    log.error('Market is null for address: {}', [event.address.toHexString()])
+    return
   }
 
   let marketCTokenLiquidated = Market.load(event.params.cTokenCollateral.toHexString())
 
   if (!marketCTokenLiquidated) {
-    throw new Error(
-      'Market is null for address: ' + event.params.cTokenCollateral.toHexString(),
-    )
+    log.error('Market is null for address: {}', [
+      event.params.cTokenCollateral.toHexString(),
+    ])
+    return
   }
 
   let mintID = event.transaction.hash
@@ -374,7 +381,8 @@ export function handleTransfer(event: Transfer): void {
   let market = Market.load(marketID)
 
   if (!market) {
-    throw new Error('Market is null for address: ' + marketID)
+    log.error('Market is null for address: {}', [marketID])
+    return
   }
 
   let amountUnderlying = market.exchangeRate.times(
@@ -476,7 +484,8 @@ export function handleNewReserveFactor(event: NewReserveFactor): void {
   let market = Market.load(marketID)
 
   if (!market) {
-    throw new Error('Market is null for address: ' + marketID)
+    log.error('Market is null for address: {}', [marketID])
+    return
   }
 
   market.reserveFactor = event.params.newReserveFactorMantissa
@@ -490,7 +499,8 @@ export function handleNewMarketInterestRateModel(
   let market = Market.load(marketID)
 
   if (!market) {
-    throw new Error('Market is null for address: ' + marketID)
+    log.error('Market is null for address: {}', [marketID])
+    return
   }
 
   if (market == null) {

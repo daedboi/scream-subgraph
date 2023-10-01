@@ -44,15 +44,11 @@ let blocksPerTenMin =
     ? 600 // fantom
     : 200 // bsc
 
-// function bytesToAddress(bytesValue: Bytes): Address {
-//   if (bytesValue.length == 20) {
-//     return bytesValue as Address;
-//   } else {
-//     log.error("Invalid Ethereum address length. Expected 20 bytes.", []);
-//     return Address.zero();
-//   }
-// }
-function bytesToAddress(bytesValue: Bytes): Address {
+function bytesToAddress(bytesValue: Bytes | null): Address {
+  if (!bytesValue) {
+    return Address.zero()
+  }
+
   let addressStr: string = bytesValue.toHexString()
 
   if (addressStr.length != 42 || addressStr.substring(0, 2) != '0x') {
@@ -71,10 +67,11 @@ function getTokenPrice(
   let comptroller = Comptroller.load('1')
 
   if (!comptroller) {
-    throw new Error('Comptroller is null for 1')
+    log.error('Comptroller is null for 1', [])
+    return BigDecimal.zero()
   }
 
-  let oracleAddress = comptroller.priceOracle as Address
+  let oracleAddress = bytesToAddress(comptroller.priceOracle)
   let underlyingPrice: BigDecimal
   if (oracleAddress.toHexString() == '0x') {
     return zeroBD
@@ -96,10 +93,11 @@ function getUSDCpriceETH(): BigDecimal {
   let comptroller = Comptroller.load('1')
 
   if (!comptroller) {
-    throw new Error('Comptroller is null for 1')
+    log.error('Comptroller is null for 1', [])
+    return BigDecimal.zero()
   }
 
-  let oracleAddress = comptroller.priceOracle as Address
+  let oracleAddress = bytesToAddress(comptroller.priceOracle)
   let usdPrice: BigDecimal
   if (oracleAddress.toHexString() == '0x') {
     return zeroBD
@@ -227,7 +225,7 @@ export function updateMarket(event: AccrueInterest): Market {
       ) {
         tokenPriceEth = getTokenPrice(
           contractAddress,
-          market.underlyingAddress as Address,
+          bytesToAddress(market.underlyingAddress),
           market.underlyingDecimals,
         )
       }
